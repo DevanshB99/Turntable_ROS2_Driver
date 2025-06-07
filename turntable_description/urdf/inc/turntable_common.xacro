@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro">
+  <!--
+    NOTE the macros defined in this file are NOT part of the public API of this
+         package. Users CANNOT rely on this file being available, or stored in
+         this location. Nor can they rely on the existence of the two macros.
+         The macros store the defined properties in the scope of the caller.
+         However, users MUST NOT rely on these properties, their contents or their
+         names.
+    Author: Ludovic Delval
+    Contributor: Felix Messmer
+  -->
+  <xacro:macro name="cylinder_inertial" params="radius length mass *origin">
+    <inertial>
+      <mass value="${mass}" />
+      <xacro:insert_block name="origin" />
+      <inertia ixx="${0.0833333 * mass * (3 * radius * radius + length * length)}" ixy="0.0" ixz="0.0"
+        iyy="${0.0833333 * mass * (3 * radius * radius + length * length)}" iyz="0.0"
+        izz="${0.5 * mass * radius * radius}" />
+    </inertial>
+  </xacro:macro>
+  <xacro:macro name="get_visual_params" params="name:=^ type:=^" >
+    <xacro:if value="${type in sec_mesh_files[name]}">
+      <xacro:property name="visual_params" value="${sec_mesh_files[name][type]}" scope="parent"/>
+    </xacro:if>
+    <xacro:unless value="${type in sec_mesh_files[name]}">
+      <xacro:property name="visual_params" value="" scope="parent"/>
+    </xacro:unless>
+  </xacro:macro>
+  <xacro:macro name="read_model_data" params="joint_limits_parameters_file kinematics_parameters_file physical_parameters_file visual_parameters_file turntable_controllers_parameters_file">
+    
+    <!-- Read .yaml files from disk, load content into properties -->
+    <xacro:property name="config_joint_limit_parameters" value="${xacro.load_yaml(joint_limits_parameters_file)}"/>
+    <xacro:property name="config_kinematics_parameters" value="${xacro.load_yaml(kinematics_parameters_file)}"/>
+    <xacro:property name="config_physical_parameters" value="${xacro.load_yaml(physical_parameters_file)}"/>
+    <xacro:property name="config_visual_parameters" value="${xacro.load_yaml(visual_parameters_file)}"/>
+    <xacro:property name="congfig_turntable_controllers_parameters" value="${xacro.load_yaml(turntable_controllers_parameters_file)}"/>
+        
+    <!-- Extract subsections from yaml dictionaries -->
+    <xacro:property name="sec_limits" value="${config_joint_limit_parameters['joint_limits']}"/>
+    <xacro:property name="sec_inertia_parameters" value="${config_physical_parameters['inertia_parameters']}" />
+    <xacro:property name="sec_kinematics" value="${config_kinematics_parameters['kinematics']}" />
+    <!-- JOINTS LIMIT PARAMETERS -->
+    <xacro:property name="disc_lower_limit" value="${sec_limits['disc_joint']['min_position']}" scope="parent"/>
+    <xacro:property name="disc_upper_limit" value="${sec_limits['disc_joint']['max_position']}" scope="parent"/>
+    <xacro:property name="disc_velocity_limit" value="${sec_limits['disc_joint']['max_velocity']}" scope="parent"/>
+    <xacro:property name="disc_effort_limit" value="${sec_limits['disc_joint']['max_effort']}" scope="parent"/>
+    <!-- kinematics -->
+    <xacro:property name="disc_x" value="${sec_kinematics['disc']['x']}" scope="parent"/>
+    <xacro:property name="disc_y" value="${sec_kinematics['disc']['y']}" scope="parent"/>
+    <xacro:property name="disc_z" value="${sec_kinematics['disc']['z']}" scope="parent"/>
+    <xacro:property name="disc_roll" value="${sec_kinematics['disc']['roll']}" scope="parent"/>
+    <xacro:property name="disc_pitch" value="${sec_kinematics['disc']['pitch']}" scope="parent"/>
+    <xacro:property name="disc_yaw" value="${sec_kinematics['disc']['yaw']}" scope="parent"/>
+    <!-- INERTIA PARAMETERS -->
+    <!-- mass -->
+    <xacro:property name="base_mass" value="${sec_inertia_parameters['base_mass']}" scope="parent"/>
+    <xacro:property name="disc_mass" value="${sec_inertia_parameters['disc_mass']}" scope="parent"/>
+    <!-- link inertia parameter -->
+    <xacro:property name="inertia_links" value="${sec_inertia_parameters['links']}" scope="parent"/>
+    <xacro:property name="base_inertia_radius" value="${inertia_links['base']['radius']}" scope="parent"/>
+    <xacro:property name="base_inertia_length" value="${inertia_links['base']['length']}" scope="parent"/>
+    <!-- center of mass -->
+    <xacro:property name="prop_disc_cog" value="${sec_inertia_parameters['center_of_mass']['disc_cog']}" scope="parent"/>
+    <xacro:property name="disc_cog" value="${prop_disc_cog['x']} ${prop_disc_cog['y']} ${prop_disc_cog['z']}" scope="parent"/>
+    <!-- inertia rotation -->
+    <xacro:property name="prop_disc_inertia_rotation" value="${sec_inertia_parameters['rotation']['disc']}" scope="parent"/>
+    <xacro:property name="disc_inertia_rotation" value="${prop_disc_inertia_rotation['roll']} ${prop_disc_inertia_rotation['pitch']} ${prop_disc_inertia_rotation['yaw']}" scope="parent"/>
+    <!-- tensors -->
+    <xacro:property name="prop_disc_inertia" value="${sec_inertia_parameters['tensor']['disc']}" scope="parent"/>
+    <xacro:property name="disc_inertia_ixx" value="${prop_disc_inertia['ixx']}" scope="parent"/>
+    <xacro:property name="disc_inertia_ixy" value="${prop_disc_inertia['ixy']}" scope="parent"/>
+    <xacro:property name="disc_inertia_ixz" value="${prop_disc_inertia['ixz']}" scope="parent"/>
+    <xacro:property name="disc_inertia_iyy" value="${prop_disc_inertia['iyy']}" scope="parent"/>
+    <xacro:property name="disc_inertia_iyz" value="${prop_disc_inertia['iyz']}" scope="parent"/>
+    <xacro:property name="disc_inertia_izz" value="${prop_disc_inertia['izz']}" scope="parent"/>
+    <!-- cylinder radius -->
+    <xacro:property name="disc_radius" value="${sec_inertia_parameters['links']['disc']['radius']}" scope="parent"/>
+    <!-- Define the 'physical' namespace -->
+    <xacro:property name="physical" value="${sec_inertia_parameters}" scope="parent"/>
+    <!-- Define the 'joint_limits' namespace -->
+    <xacro:property name="joint_limits" value="${sec_limits}" scope="parent"/>
+  </xacro:macro>
+</robot>

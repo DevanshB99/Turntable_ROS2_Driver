@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="turntable">
+    <xacro:arg name="initial_positions_file" default="initial_positions.yaml" />
+
+    <!-- Import turntable urdf file -->
+    <xacro:include filename="$(find turntable_description)/urdf/turntable.urdf" />
+
+    <!-- Import control_xacro -->
+    <xacro:include filename="turntable.ros2_control.xacro" />
+
+
+    <xacro:turntable_ros2_control name="FakeSystem" initial_positions_file="$(arg initial_positions_file)"/>
+
+</robot>

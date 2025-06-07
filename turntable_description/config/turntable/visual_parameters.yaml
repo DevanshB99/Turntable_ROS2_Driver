@@ -1,0 +1,19 @@
+mesh_files:
+  turntable_base:
+    visual:
+      mesh:
+        package: turntable_description
+        path: meshes/visual/turntable_base.dae
+    collision:
+      mesh:
+        package: turntable_description
+        path: meshes/collision/turntable_base.stl
+  turntable_disc:
+    visual:
+      mesh:
+        package: turntable_description
+        path: meshes/visual/turntable_disc.dae
+    collision:
+      mesh:
+        package: turntable_description
+        path: meshes/collision/turntable_disc.stl

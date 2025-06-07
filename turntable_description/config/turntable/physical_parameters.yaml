@@ -1,0 +1,36 @@
+# Physical parameters
+inertia_parameters:
+  base_mass: 1.5  # This mass might be incorrect
+  disc_mass: 0.31
+  links:
+    base:
+      radius: 0.10715
+      length: 0.094  
+    disc:
+      radius: 0.084 # manually measured
+      length: 0.008
+  center_of_mass:
+    disc_cog:
+      x: 0.0
+      y: 0.0
+      z: 0.05645
+  rotation:
+    disc:
+      roll: 0.0
+      pitch: 0.0
+      yaw: 0.0
+  tensor:
+    base:
+      ixx: 0.00540992
+      ixy: 0.0
+      ixz: 0.0
+      iyy: 0.00540992
+      iyz: 0.0
+      izz: 0.00861084  
+    disc:
+      ixx: 0.00054849
+      ixy: 0.0
+      ixz: 0.0
+      iyy: 0.00054849
+      iyz: 0.0
+      izz: 0.00109368

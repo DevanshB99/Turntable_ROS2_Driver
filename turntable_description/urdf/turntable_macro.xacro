@@ -1,0 +1,116 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <!-- Include the necessary XACRO files -->
+  <xacro:include filename="$(find turntable_description)/urdf/inc/turntable_common.xacro" />
+  <xacro:include filename="$(find turntable_description)/urdf/inc/turntable_transmission.xacro" />  
+
+  <!-- Macro arguments -->
+  <xacro:macro name="turntable_macro" params="
+      name 
+      prefix 
+      parent 
+      use_nominal_extrinsics
+      kinematics_parameters_file 
+      joint_limits_parameters_file 
+      physical_parameters_file
+      turntable_controllers_parameters_file 
+      visual_parameters_file
+      transmission_hw_interface:=hardware_interface/PositionJointInterface">
+    
+    <!-- Load configuration data from .yaml files -->
+    <xacro:read_model_data
+      joint_limits_parameters_file="${joint_limits_parameters_file}"
+      kinematics_parameters_file="${kinematics_parameters_file}"
+      physical_parameters_file="${physical_parameters_file}"
+      visual_parameters_file="${visual_parameters_file}"
+      turntable_controllers_parameters_file="${turntable_controllers_parameters_file}"/>
+
+    <!-- Define the turntable name -->
+    <!-- BASE LINK -->
+    <link name="${prefix}base_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://turntable_description/meshes/collision/turntable_base.stl"/>
+        </geometry>
+        <material name="grey">
+          <color rgba="0.6 0.6 0.6 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0.047" rpy="0 0 0"/>
+        <geometry>
+          <cylinder length="0.094" radius="0.1400"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <origin xyz="0 0 0.047" rpy="0 0 0"/>
+        <mass value="${physical.base_mass}"/>
+        <inertia
+          ixx="${physical.tensor.base.ixx}"
+          ixy="${physical.tensor.base.ixy}"
+          ixz="${physical.tensor.base.ixz}"
+          iyy="${physical.tensor.base.iyy}"
+          iyz="${physical.tensor.base.iyz}"
+          izz="${physical.tensor.base.izz}" />
+      </inertial>
+    </link>
+
+    <!-- DISC LINK -->
+    <link name="${prefix}disc_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://turntable_description/meshes/collision/turntable_disc.stl"/>
+        </geometry>
+        <material name="blue">
+          <color rgba="0.4 0.6 0.8 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <cylinder length="0.008" radius="0.1016"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="${physical.disc_mass}"/>
+        <inertia
+          ixx="${physical.tensor.disc.ixx}"
+          ixy="${physical.tensor.disc.ixy}"
+          ixz="${physical.tensor.disc.ixz}"
+          iyy="${physical.tensor.disc.iyy}"
+          iyz="${physical.tensor.disc.iyz}"
+          izz="${physical.tensor.disc.izz}" />
+      </inertial>
+    </link>
+
+    <!-- REVOLUTE JOINT -->
+    <joint name="${prefix}disc_joint" type="revolute">
+      <parent link="${prefix}base_link"/>
+      <child link="${prefix}disc_link"/>
+      <origin xyz="0 0 0.1015" rpy="0 0 0"/>
+      <axis xyz="0 0 1"/>
+      <limit
+        lower="${joint_limits.disc_joint.min_position}"
+        upper="${joint_limits.disc_joint.max_position}"
+        effort="${joint_limits.disc_joint.max_effort}"
+        velocity="${joint_limits.disc_joint.max_velocity}"/>
+    </joint>
+
+    <!-- FIXED JOINT TO WORLD -->
+    <joint name="${prefix}base_fixed" type="fixed">
+      <parent link="${parent}"/>
+      <child link="${prefix}base_link"/>
+      <origin xyz="0 0 0" rpy="0 0 0" />      
+    </joint>
+
+    <!-- TRANSMISSION BLOCK -->
+    <xacro:turntable_transmission
+      prefix="${prefix}"
+      hw_interface="${transmission_hw_interface}" />
+
+  </xacro:macro>
+</robot>

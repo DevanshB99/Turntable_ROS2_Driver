@@ -1,0 +1,10 @@
+joint_limits:
+  disc_joint:
+    has_acceleration_limits: false
+    has_effort_limits: true
+    has_velocity_limits: true
+    has_position_limits: true
+    min_position: -3.14
+    max_position: 3.14
+    max_velocity: 3.14
+    max_effort: 150.0

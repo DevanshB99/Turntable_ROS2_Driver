@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:macro name="turntable_ros2_control" params="
+    prefix 
+    use_fake_hardware:=true 
+    headless_mode:=false 
+    initial_positions:=${dict(disc_joint=0.0)}
+    ">
+
+    <ros2_control name="TurntableSystem" type="system">
+      <hardware>
+        <xacro:if value="${use_fake_hardware}">
+          <plugin>mock_components/GenericSystem</plugin>
+          <param name="mock_sensor_commands">true</param>
+          <param name="state_following_offset">0.0</param>
+          <param name="calculate_dynamics">true</param>
+        </xacro:if>
+        <xacro:unless value="${use_fake_hardware}">
+          <plugin>turntable_hardware_interface/TurntableSystem</plugin>
+          <param name="publish_command">1</param>
+          <param name="target_angle_topic">/target_angle</param>
+          <param name="joint_states_topic">/turntables/joint_states</param>
+          <param name="headless_mode">${headless_mode}</param>
+        </xacro:unless>
+      </hardware>
+
+      <joint name="${prefix}disc_joint">
+        <command_interface name="position"/>
+        <state_interface name="position">
+          <param name="initial_value">${initial_positions['disc_joint']}</param>
+        </state_interface>
+        <state_interface name="velocity"/>
+      </joint>
+
+      <gpio name="speed_scaling">
+        <state_interface name="speed_scaling_factor"/>
+      </gpio>      
+    </ros2_control>
+
+  </xacro:macro>
+</robot>

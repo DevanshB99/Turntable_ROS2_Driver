@@ -1,0 +1,57 @@
+controller_manager:
+  ros__parameters:
+    # update_rate: 100
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+      name: joint_state_broadcaster
+
+    turntable_speed_scaling_state_broadcaster:
+      type: ur_controllers/SpeedScalingStateBroadcaster
+
+    turntable_trajectory_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+
+    turntable_scaled_trajectory_controller:
+      type: ur_controllers/ScaledJointTrajectoryController
+
+
+    turntable_forward_position_controller:
+      type: position_controllers/JointGroupPositionController
+
+turntable_speed_scaling_state_broadcaster:
+  ros__parameters:
+    state_publish_rate: 50.0
+    tf_prefix: "$(tf_prefix)"
+    
+turntable_trajectory_controller:
+  ros__parameters:
+    joints:
+      - disc_joint
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+      - velocity
+    state_publish_rate: 50.0
+    action_monitor_rate: 20.0
+    interface_name: position       
+
+turntable_scaled_trajectory_controller:
+  ros__parameters:
+    joints:
+      - disc_joint
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+      - velocity  
+    state_publish_rate: 50.0
+    action_monitor_rate: 20.0
+    speed_scaling_interface_name: speed_scaling/speed_scaling_factor   
+
+
+turntable_forward_position_controller:
+  ros__parameters:
+    joints:
+      - disc_joint
+    interface_name: position         

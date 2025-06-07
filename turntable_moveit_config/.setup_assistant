@@ -1,0 +1,25 @@
+moveit_setup_assistant_config:
+  urdf:
+    package: turntable_description
+    relative_path: urdf/turntable.urdf
+  srdf:
+    relative_path: config/turntable.srdf
+  package_settings:
+    author_name: Devansh A. Bajwala
+    author_email: db7529@uw.edu
+    generated_timestamp: 1749258831
+  control_xacro:
+    command:
+      - position
+    state:
+      - position
+      - velocity
+  modified_urdf:
+    xacros:
+      - control_xacro
+  control_xacro:
+    command:
+      - position
+    state:
+      - position
+      - velocity

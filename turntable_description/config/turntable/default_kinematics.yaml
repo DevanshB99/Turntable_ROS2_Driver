@@ -1,0 +1,9 @@
+kinematics:
+  disc:
+    x: 0
+    y: 0
+    z: 0.1015
+    roll: 0
+    pitch: 0
+    yaw: 0
+hash: calib_12788084448423163542    

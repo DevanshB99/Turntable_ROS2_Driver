@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="turntable">
+  <xacro:arg name="name" default="turntable"/>
+  <xacro:include filename="$(find turntable_description)/urdf/turntable_macro.xacro" />
+  <xacro:include filename="$(find turntable_description)/urdf/turntable.ros2_control.xacro" />
+  <xacro:arg name="prefix" default=""/>
+  <xacro:arg name="parent" default="world"/>
+  <xacro:arg name="use_nominal_extrinsics" default="false"/>
+
+  <!-- Description config files -->
+  <xacro:arg name="joint_limit_params" default="$(find turntable_description)/config/turntable/joint_limits.yaml"/>
+  <xacro:arg name="kinematics_params" default="$(find turntable_description)/config/turntable/default_kinematics.yaml"/>
+  <xacro:arg name="physical_params" default="$(find turntable_description)/config/turntable/physical_parameters.yaml"/>
+  <xacro:arg name="visual_params" default="$(find turntable_description)/config/turntable/visual_parameters.yaml"/>
+  <xacro:arg name="turntable_controllers_params" default="$(find turntable_description)/config/turntable/turntable_controllers.yaml"/>
+  <xacro:arg name="transmission_hw_interface" default=""/>
+
+  <!-- ros2_control simulation toggle -->
+  <xacro:arg name="use_fake_hardware" default="true"/>
+  <xacro:arg name="headless_mode" default="false"/>
+  <xacro:arg name="initial_positions_file" default="$(find turntable_description)/config/turntable/initial_positions.yaml"/>
+  <xacro:property name="initial_positions_file" value="$(arg initial_positions_file)"/>
+  <xacro:property name="initial_positions" value="${xacro.load_yaml(initial_positions_file)['initial_positions']}"/>
+
+  <!-- ros2_control plugin -->
+  <xacro:turntable_ros2_control
+    use_fake_hardware="$(arg use_fake_hardware)"
+    prefix="$(arg prefix)"
+    headless_mode="$(arg headless_mode)"
+    initial_positions="${initial_positions}" />
+  
+  <link name="world"/>
+
+  <xacro:turntable_macro
+    name="$(arg name)"
+    prefix="$(arg prefix)"
+    parent="$(arg parent)"
+    use_nominal_extrinsics="$(arg use_nominal_extrinsics)"
+    kinematics_parameters_file="$(arg kinematics_params)"
+    joint_limits_parameters_file="$(arg joint_limit_params)"
+    physical_parameters_file="$(arg physical_params)"
+    visual_parameters_file="$(arg visual_params)"
+    turntable_controllers_parameters_file="$(arg turntable_controllers_params)"
+    transmission_hw_interface="$(arg transmission_hw_interface)"/>
+</robot>
