@@ -28,7 +28,10 @@
 
     <!-- Define the turntable name -->
     <!-- BASE LINK -->
-    <link name="${prefix}base_link">
+    <link name="${prefix}base_link"/>
+
+    <!-- BASE LINK INERTIA -->
+    <link name="${prefix}base_link_inertia">
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
@@ -87,9 +90,19 @@
       </inertial>
     </link>
 
+    <!-- Object-Co-Ordinate Frame -->
+    <link name="$${prefix}object_frame"/>
+
+    <!-- FIXED JOINT TO WORLD -->
+    <joint name="${prefix}base_joint" type="fixed">
+      <parent link="${parent}"/>
+      <child link="${prefix}base_link"/>
+      <origin xyz="0 0 0" rpy="0 0 0" />      
+    </joint>
+
     <!-- REVOLUTE JOINT -->
     <joint name="${prefix}disc_joint" type="revolute">
-      <parent link="${prefix}base_link"/>
+      <parent link="${prefix}base_link_inertia"/>
       <child link="${prefix}disc_link"/>
       <origin xyz="0 0 0.1015" rpy="0 0 0"/>
       <axis xyz="0 0 1"/>
@@ -98,13 +111,6 @@
         upper="${joint_limits.disc_joint.max_position}"
         effort="${joint_limits.disc_joint.max_effort}"
         velocity="${joint_limits.disc_joint.max_velocity}"/>
-    </joint>
-
-    <!-- FIXED JOINT TO WORLD -->
-    <joint name="${prefix}base_fixed" type="fixed">
-      <parent link="${parent}"/>
-      <child link="${prefix}base_link"/>
-      <origin xyz="0 0 0" rpy="0 0 0" />      
     </joint>
 
     <!-- TRANSMISSION BLOCK -->
