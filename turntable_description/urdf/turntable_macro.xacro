@@ -10,7 +10,6 @@
       name 
       prefix 
       parent 
-      use_nominal_extrinsics
       kinematics_parameters_file 
       joint_limits_parameters_file 
       physical_parameters_file
@@ -91,7 +90,10 @@
     </link>
 
     <!-- Object-Co-Ordinate Frame -->
-    <link name="$${prefix}object_frame"/>
+    <link name="${prefix}object_frame"/>
+
+    <!-- ROS-Industrial 'base' frame - turntable base coordinates -->
+    <link name="${prefix}turntable_base"/>
 
     <!-- FIXED JOINT TO WORLD -->
     <joint name="${prefix}base_joint" type="fixed">
@@ -99,6 +101,14 @@
       <child link="${prefix}base_link"/>
       <origin xyz="0 0 0" rpy="0 0 0" />      
     </joint>
+
+    <!-- Coordinate System Alignment Joint -->
+    <joint name="${prefix}base_link-base_link_inertia" type="fixed">
+      <parent link="${prefix}base_link"/>
+      <child link="${prefix}base_link_inertia"/>
+      <!-- Coordinate alignment - add rotation here if needed for REP-103 compliance -->
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>  
 
     <!-- REVOLUTE JOINT -->
     <joint name="${prefix}disc_joint" type="revolute">
@@ -111,6 +121,20 @@
         upper="${joint_limits.disc_joint.max_position}"
         effort="${joint_limits.disc_joint.max_effort}"
         velocity="${joint_limits.disc_joint.max_velocity}"/>
+    </joint>
+
+    <!-- Object Mounted on Turntable: Standard frame reference on top of the disc_link -->
+    <joint name="${prefix}object_mount" type="fixed">
+      <parent link="${prefix}disc_link"/>
+      <child link="${prefix}object_frame"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+    <!-- ROS-Industrial Base Frame -->
+    <joint name="${prefix}base_link-turntable_base_joint" type="fixed">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <parent link="${prefix}base_link"/>
+      <child link="${prefix}turntable_base"/>
     </joint>
 
     <!-- TRANSMISSION BLOCK -->

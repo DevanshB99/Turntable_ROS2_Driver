@@ -5,7 +5,6 @@
   <xacro:include filename="$(find turntable_description)/urdf/turntable.ros2_control.xacro" />
   <xacro:arg name="prefix" default=""/>
   <xacro:arg name="parent" default="world"/>
-  <xacro:arg name="use_nominal_extrinsics" default="false"/>
 
   <!-- Description config files -->
   <xacro:arg name="joint_limit_params" default="$(find turntable_description)/config/turntable/joint_limits.yaml"/>
@@ -35,7 +34,6 @@
     name="$(arg name)"
     prefix="$(arg prefix)"
     parent="$(arg parent)"
-    use_nominal_extrinsics="$(arg use_nominal_extrinsics)"
     kinematics_parameters_file="$(arg kinematics_params)"
     joint_limits_parameters_file="$(arg joint_limit_params)"
     physical_parameters_file="$(arg physical_params)"
