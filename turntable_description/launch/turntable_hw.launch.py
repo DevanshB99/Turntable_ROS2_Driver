@@ -106,28 +106,6 @@ def generate_launch_description():
         Node(
             package="controller_manager",
             executable="spawner",
-            name="spawner_turntable_scaled_trajectory_controller",
-            arguments=[
-                "turntable_scaled_trajectory_controller",
-                "--controller-manager", "/controller_manager",
-                "--inactive" # Loads but does not activate
-            ],
-            output="screen"
-        ),
-        Node(
-            package="controller_manager",
-            executable="spawner",
-            name="spawner_turntable_speed_scaling_state_broadcaster",
-            arguments=[
-                "turntable_speed_scaling_state_broadcaster",
-                "--controller-manager", "/controller_manager",
-                "--inactive" # Loads but does not activate
-            ],
-            output="screen"
-        ),
-        Node(
-            package="controller_manager",
-            executable="spawner",
             name="spawner_turntable_forward_position_controller",
             arguments=[
                 "turntable_forward_position_controller",

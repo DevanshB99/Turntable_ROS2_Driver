@@ -102,18 +102,7 @@ def generate_launch_description():
                 "--inactive"  # Loads but does not activate
             ],
             output="screen"
-        ),
-        Node(
-            package="controller_manager",
-            executable="spawner",
-            name="spawner_turntable_scaled_trajectory_controller",
-            arguments=[
-                "turntable_scaled_trajectory_controller",
-                "--controller-manager", "/controller_manager",
-                "--inactive" # Loads but does not activate
-            ],
-            output="screen"
-        ),               
+        ),              
         move_group_launch,
         Node(
             package="rviz2",

@@ -1,7 +1,8 @@
-# This config file is used by ros2_control
 controller_manager:
   ros__parameters:
-    update_rate: 100  # Hz
+
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
 
     turntable_trajectory_controller:
       type: joint_trajectory_controller/JointTrajectoryController
@@ -9,20 +10,26 @@ controller_manager:
     turntable_forward_position_controller:
       type: position_controllers/JointPositionController
 
-    joint_state_broadcaster:
-      type: joint_state_broadcaster/JointStateBroadcaster
+# ====== CONTROLLER CONFIGURATIONS ======
 
 turntable_trajectory_controller:
   ros__parameters:
     joints:
-      - disc_joint
+      - turntable_disc_joint
     command_interfaces:
       - position
     state_interfaces:
       - position
       - velocity
+    state_publish_rate: 50.0
+    action_monitor_rate: 20.0
+    allow_partial_joints_goal: false
+    allow_nonzero_velocity_at_trajectory_end: false
+
 turntable_forward_position_controller:
   ros__parameters:
     joints:
-      - disc_joint
+      - turntable_disc_joint
     interface_name: position
+    state_publish_rate: 50.0
+    action_monitor_rate: 20.0

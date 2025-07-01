@@ -5,8 +5,6 @@ moveit_controller_manager: moveit_simple_controller_manager/MoveItSimpleControll
 moveit_simple_controller_manager:
   controller_names:
     - turntable_trajectory_controller
-    - turntable_scaled_trajectory_controller
-    - turntable_forward_position_controller
 
   turntable_trajectory_controller:
     type: FollowJointTrajectory
@@ -14,15 +12,3 @@ moveit_simple_controller_manager:
       - disc_joint
     action_ns: follow_joint_trajectory
     default: true
-  turntable_scaled_trajectory_controller:
-    type: FollowJointTrajectory
-    joints:
-      - disc_joint
-    action_ns: follow_joint_trajectory
-    default: false
-  turntable_forward_position_controller:
-    type: FollowJointTrajectory
-    joints:
-      - disc_joint
-    action_ns: follow_joint_trajectory
-    default: false

@@ -9,7 +9,7 @@
   <xacro:macro name="turntable_macro" params="
       name 
       prefix 
-      parent 
+      parent
       kinematics_parameters_file 
       joint_limits_parameters_file 
       physical_parameters_file
@@ -92,25 +92,21 @@
     <!-- Object-Co-Ordinate Frame -->
     <link name="${prefix}object_frame"/>
 
-    <!-- ROS-Industrial 'base' frame - turntable base coordinates -->
-    <link name="${prefix}turntable_base"/>
-
-    <!-- FIXED JOINT TO WORLD -->
-    <joint name="${prefix}base_joint" type="fixed">
+    <!-- WORLD TO BASE_LINK JOINT (base is stationary) -->
+    <joint name="${prefix}world_to_base_joint" type="fixed">
       <parent link="${parent}"/>
       <child link="${prefix}base_link"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+    <!-- BASE_LINK TO BASE_LINK_INERTIA JOINT -->
+    <joint name="${prefix}base_inertia_joint" type="fixed">
+      <parent link="${prefix}base_link"/>
+      <child link="${prefix}base_link_inertia"/>
       <origin xyz="0 0 0" rpy="0 0 0" />      
     </joint>
 
-    <!-- Coordinate System Alignment Joint -->
-    <joint name="${prefix}base_link-base_link_inertia" type="fixed">
-      <parent link="${prefix}base_link"/>
-      <child link="${prefix}base_link_inertia"/>
-      <!-- Coordinate alignment - add rotation here if needed for REP-103 compliance -->
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-    </joint>  
-
-    <!-- REVOLUTE JOINT -->
+    <!-- REVOLUTE JOINT (disc_link rotates relative to base_link_inertia) -->
     <joint name="${prefix}disc_joint" type="revolute">
       <parent link="${prefix}base_link_inertia"/>
       <child link="${prefix}disc_link"/>
@@ -123,18 +119,11 @@
         velocity="${joint_limits.disc_joint.max_velocity}"/>
     </joint>
 
-    <!-- Object Mounted on Turntable: Standard frame reference on top of the disc_link -->
-    <joint name="${prefix}object_mount" type="fixed">
+    <!-- DISC_LINK TO OBJECT_FRAME JOINT (object_frame rotates with disc) -->
+    <joint name="${prefix}object_frame_joint" type="fixed">
       <parent link="${prefix}disc_link"/>
       <child link="${prefix}object_frame"/>
       <origin xyz="0 0 0" rpy="0 0 0"/>
-    </joint>
-
-    <!-- ROS-Industrial Base Frame -->
-    <joint name="${prefix}base_link-turntable_base_joint" type="fixed">
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <parent link="${prefix}base_link"/>
-      <child link="${prefix}turntable_base"/>
     </joint>
 
     <!-- TRANSMISSION BLOCK -->
