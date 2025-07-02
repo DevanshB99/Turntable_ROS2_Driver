@@ -45,7 +45,7 @@ def generate_launch_description():
 
     controllers_yaml = PathJoinSubstitution([
         FindPackageShare(description_package),
-        "config", "turntable", "turntable_controllers.yaml"
+        "config", "turntable", "ros2_controllers.yaml"
     ])
 
     move_group_launch = IncludeLaunchDescription(
@@ -57,12 +57,17 @@ def generate_launch_description():
             ])
         ]),
         launch_arguments={
-            'planning_pipeline': 'ompl',
-            'sensor_manager': 'false',
-            'octomap_manager': 'false',
-            'use_octomap': 'false',
-            'use_fake_hardware': use_fake_hardware,
-            'capabilities': '',
+                'planning_pipeline': 'ompl',
+                'sensor_manager': 'false',
+                'publish_monitored_planning_scene': 'true',
+                'octomap_manager': 'false',
+                'use_octomap': 'false',
+                'use_fake_hardware': 'true',  # Always true for simulation
+                'fake_execution': 'true',     # Enable fake execution for simulation
+                'capabilities': '',
+                'disable_capabilities': 'move_group/ClearOctomapService',
+                'log_level': 'warn',
+                'use_sim_time': 'false',      # Use false unless using Gazebo
         }.items()
     )   
 

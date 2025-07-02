@@ -11,7 +11,7 @@
   <xacro:arg name="kinematics_params" default="$(find turntable_description)/config/turntable/default_kinematics.yaml"/>
   <xacro:arg name="physical_params" default="$(find turntable_description)/config/turntable/physical_parameters.yaml"/>
   <xacro:arg name="visual_params" default="$(find turntable_description)/config/turntable/visual_parameters.yaml"/>
-  <xacro:arg name="turntable_controllers_params" default="$(find turntable_description)/config/turntable/turntable_controllers.yaml"/>
+  <xacro:arg name="ros2_controllers_params" default="$(find turntable_description)/config/turntable/ros2_controllers.yaml"/>
   <xacro:arg name="transmission_hw_interface" default=""/>
 
   <!-- ros2_control simulation toggle -->
@@ -38,6 +38,6 @@
     joint_limits_parameters_file="$(arg joint_limit_params)"
     physical_parameters_file="$(arg physical_params)"
     visual_parameters_file="$(arg visual_params)"
-    turntable_controllers_parameters_file="$(arg turntable_controllers_params)"
+    ros2_controllers_parameters_file="$(arg ros2_controllers_params)"
     transmission_hw_interface="$(arg transmission_hw_interface)"/>
 </robot>

@@ -1,5 +1,6 @@
 controller_manager:
   ros__parameters:
+    update_rate: 100
 
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
@@ -8,14 +9,14 @@ controller_manager:
       type: joint_trajectory_controller/JointTrajectoryController
 
     turntable_forward_position_controller:
-      type: position_controllers/JointPositionController
+      type: position_controllers/JointGroupPositionController
 
 # ====== CONTROLLER CONFIGURATIONS ======
 
 turntable_trajectory_controller:
   ros__parameters:
     joints:
-      - turntable_disc_joint
+      - disc_joint
     command_interfaces:
       - position
     state_interfaces:
@@ -29,7 +30,7 @@ turntable_trajectory_controller:
 turntable_forward_position_controller:
   ros__parameters:
     joints:
-      - turntable_disc_joint
+      - disc_joint
     interface_name: position
     state_publish_rate: 50.0
     action_monitor_rate: 20.0

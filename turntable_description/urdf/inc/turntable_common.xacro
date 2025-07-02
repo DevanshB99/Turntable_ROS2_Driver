@@ -27,15 +27,15 @@
       <xacro:property name="visual_params" value="" scope="parent"/>
     </xacro:unless>
   </xacro:macro>
-  <xacro:macro name="read_model_data" params="joint_limits_parameters_file kinematics_parameters_file physical_parameters_file visual_parameters_file turntable_controllers_parameters_file">
-    
+  <xacro:macro name="read_model_data" params="joint_limits_parameters_file kinematics_parameters_file physical_parameters_file visual_parameters_file ros2_controllers_parameters_file">
+
     <!-- Read .yaml files from disk, load content into properties -->
     <xacro:property name="config_joint_limit_parameters" value="${xacro.load_yaml(joint_limits_parameters_file)}"/>
     <xacro:property name="config_kinematics_parameters" value="${xacro.load_yaml(kinematics_parameters_file)}"/>
     <xacro:property name="config_physical_parameters" value="${xacro.load_yaml(physical_parameters_file)}"/>
     <xacro:property name="config_visual_parameters" value="${xacro.load_yaml(visual_parameters_file)}"/>
-    <xacro:property name="congfig_turntable_controllers_parameters" value="${xacro.load_yaml(turntable_controllers_parameters_file)}"/>
-        
+    <xacro:property name="config_ros2_controllers_parameters" value="${xacro.load_yaml(ros2_controllers_parameters_file)}"/>
+
     <!-- Extract subsections from yaml dictionaries -->
     <xacro:property name="sec_limits" value="${config_joint_limit_parameters['joint_limits']}"/>
     <xacro:property name="sec_inertia_parameters" value="${config_physical_parameters['inertia_parameters']}" />
