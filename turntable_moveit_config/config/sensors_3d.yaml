@@ -1,4 +1,1 @@
 sensors: []
-sensor_plugins: []
-sensor_manager_plugins: []
-sensor_manager_plugin: "sensors_3d/SensorManager"
