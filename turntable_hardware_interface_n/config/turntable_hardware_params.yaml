@@ -1,0 +1,11 @@
+turntable_system:
+  ros__parameters:
+    hardware_class_type: "turntable_hardware_interface/TurntableSystem"
+
+    hardware_parameters:
+      publish_command: "1"
+      target_angle_topic: "/target_angle"
+      joint_states_topic: "/turntables/joint_states"
+
+    joints:
+      - name: disc_joint

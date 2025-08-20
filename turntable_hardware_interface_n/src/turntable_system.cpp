@@ -1,8 +1,8 @@
 #include "turntable_hardware_interface/turntable_system.hpp"
+
 #include <hardware_interface/types/hardware_interface_type_values.hpp>
 #include <rclcpp/logging.hpp>
 #include <algorithm>
-#include <cmath>
 
 namespace turntable_hardware_interface
 {
@@ -19,58 +19,41 @@ hardware_interface::CallbackReturn TurntableSystem::on_init(const hardware_inter
   hw_position_ = 0.0;
   hw_velocity_ = 0.0;
   hw_command_ = 0.0;
-  previous_command_ = 0.0;
   hw_speed_scaling_factor_ = 1.0; 
   hardware_connected_ = false;
-  esp32_online_ = false;
   
-  // Parameters from YAML with defaults
-  if (info_.hardware_parameters.count("publish_command")) {
+  // Parameters from YAML
+  if (info_.hardware_parameters.count("publish_command"))
+  {
     publish_command_ = std::stoi(info_.hardware_parameters.at("publish_command"));
-  } else {
-    publish_command_ = 1;
+  }
+  else
+  {
+    publish_command_ = 1; // Default value
+    RCLCPP_WARN(rclcpp::get_logger("TurntableSystem"), 
+               "Parameter 'publish_command' not found, using default: %d", publish_command_);
   }
   
-  if (info_.hardware_parameters.count("target_angle_topic")) {
+  if (info_.hardware_parameters.count("target_angle_topic"))
+  {
     target_angle_topic_ = info_.hardware_parameters.at("target_angle_topic");
-  } else {
-    target_angle_topic_ = "/esp32/target_angle";
+  }
+  else
+  {
+    target_angle_topic_ = "/target_angle"; // Default value
+    RCLCPP_WARN(rclcpp::get_logger("TurntableSystem"), 
+               "Parameter 'target_angle_topic' not found, using default: %s", target_angle_topic_.c_str());
   }
   
-  if (info_.hardware_parameters.count("trajectory_topic")) {
-    trajectory_topic_ = info_.hardware_parameters.at("trajectory_topic");
-  } else {
-    trajectory_topic_ = "/esp32/trajectory";
-  }
-  
-  if (info_.hardware_parameters.count("joint_states_topic")) {
+  if (info_.hardware_parameters.count("joint_states_topic"))
+  {
     joint_states_topic_ = info_.hardware_parameters.at("joint_states_topic");
-  } else {
-    joint_states_topic_ = "/turntables/joint_states";
   }
-  
-  if (info_.hardware_parameters.count("velocity_topic")) {
-    velocity_topic_ = info_.hardware_parameters.at("velocity_topic");
-  } else {
-    velocity_topic_ = "/esp32/cmd_vel";
-  }
-  
-  if (info_.hardware_parameters.count("esp32_status_topic")) {
-    esp32_status_topic_ = info_.hardware_parameters.at("esp32_status_topic");
-  } else {
-    esp32_status_topic_ = "/esp32/status";
-  }
-  
-  if (info_.hardware_parameters.count("command_tolerance")) {
-    command_tolerance_ = std::stod(info_.hardware_parameters.at("command_tolerance"));
-  } else {
-    command_tolerance_ = 0.017; // ~1 degree in radians
-  }
-  
-  if (info_.hardware_parameters.count("velocity_limit")) {
-    velocity_limit_ = std::stod(info_.hardware_parameters.at("velocity_limit"));
-  } else {
-    velocity_limit_ = 1.57; // ~90 deg/s in rad/s
+  else
+  {
+    joint_states_topic_ = "/turntables/joint_states"; // Default value
+    RCLCPP_WARN(rclcpp::get_logger("TurntableSystem"), 
+               "Parameter 'joint_states_topic' not found, using default: %s", joint_states_topic_.c_str());
   }
   
   return hardware_interface::CallbackReturn::SUCCESS;
@@ -81,31 +64,24 @@ hardware_interface::CallbackReturn TurntableSystem::on_activate(const rclcpp_lif
   rclcpp::NodeOptions options;
   node_ = std::make_shared<rclcpp::Node>("turntable_system_node", options);
 
+  // Initialize state tracking timestamp
   last_update_time_ = node_->get_clock()->now();
-  last_command_time_ = node_->get_clock()->now();
   hardware_connected_ = false;
-  esp32_online_ = false;
 
   if (publish_command_)
   {
     target_angle_pub_ = node_->create_publisher<std_msgs::msg::Float32>(target_angle_topic_, 10);
-    trajectory_pub_ = node_->create_publisher<trajectory_msgs::msg::JointTrajectory>(trajectory_topic_, 10);
-    velocity_pub_ = node_->create_publisher<geometry_msgs::msg::Twist>(velocity_topic_, 10);
   }
 
   joint_state_sub_ = node_->create_subscription<sensor_msgs::msg::JointState>(
     joint_states_topic_, rclcpp::SensorDataQoS(),
     std::bind(&TurntableSystem::joint_state_callback, this, std::placeholders::_1));
-    
-  esp32_status_sub_ = node_->create_subscription<std_msgs::msg::Bool>(
-    esp32_status_topic_, 10,
-    std::bind(&TurntableSystem::esp32_status_callback, this, std::placeholders::_1));
 
   executor_ = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
   executor_->add_node(node_);
   executor_thread_ = std::thread([this]() { executor_->spin(); });
 
-  RCLCPP_INFO(node_->get_logger(), "[ESP32TurntableSystem] Activated successfully.");
+  RCLCPP_INFO(node_->get_logger(), "[TurntableSystem] Activated successfully.");
   return hardware_interface::CallbackReturn::SUCCESS;
 }
 
@@ -117,10 +93,7 @@ hardware_interface::CallbackReturn TurntableSystem::on_deactivate(const rclcpp_l
     executor_thread_.join();
 
   target_angle_pub_.reset();
-  trajectory_pub_.reset();
-  velocity_pub_.reset();
   joint_state_sub_.reset();
-  esp32_status_sub_.reset();
   executor_.reset();
   node_.reset();
 
@@ -129,8 +102,9 @@ hardware_interface::CallbackReturn TurntableSystem::on_deactivate(const rclcpp_l
 
 hardware_interface::return_type TurntableSystem::read(const rclcpp::Time &time, const rclcpp::Duration &)
 {
+  // Check if we've received state updates recently
   auto time_since_last_update = time - last_update_time_;
-  if (time_since_last_update.seconds() > 2.0) {
+  if (time_since_last_update.seconds() > 1.0) {
     if (hardware_connected_) {
       RCLCPP_WARN_THROTTLE(node_->get_logger(), *node_->get_clock(), 5000, 
                          "No joint state updates received for %.2f seconds", 
@@ -142,22 +116,14 @@ hardware_interface::return_type TurntableSystem::read(const rclcpp::Time &time, 
   return hardware_interface::return_type::OK;
 }
 
-hardware_interface::return_type TurntableSystem::write(const rclcpp::Time &time, const rclcpp::Duration &)
+hardware_interface::return_type TurntableSystem::write(const rclcpp::Time &, const rclcpp::Duration &)
 {
-  if (!publish_command_ || !target_angle_pub_ || !esp32_online_)
-    return hardware_interface::return_type::OK;
-
-  // Check if command has changed significantly
-  double command_diff = std::abs(hw_command_ - previous_command_);
-  if (command_diff > command_tolerance_) {
+  if (publish_command_ && target_angle_pub_)
+  {
     std_msgs::msg::Float32 msg;
-    msg.data = static_cast<float>(hw_command_ * 180.0 / M_PI); // Convert to degrees
+    // No sign flip
+    msg.data = static_cast<float>(hw_command_ * 180.0 / M_PI);
     target_angle_pub_->publish(msg);
-    
-    previous_command_ = hw_command_;
-    last_command_time_ = time;
-    
-    RCLCPP_DEBUG(node_->get_logger(), "Sent target angle: %.2f degrees", msg.data);
   }
 
   return hardware_interface::return_type::OK;
@@ -186,25 +152,17 @@ void TurntableSystem::joint_state_callback(const sensor_msgs::msg::JointState::S
   {
     auto idx = std::distance(msg->name.begin(), it);
     if (idx >= 0 && static_cast<size_t>(idx) < msg->position.size()) {
+      // No sign flip needed - using direct value
       hw_position_ = msg->position[idx];
     }
     
     if (idx >= 0 && static_cast<size_t>(idx) < msg->velocity.size()) {
+      // No sign flip needed
       hw_velocity_ = msg->velocity[idx];
     }
     
     last_update_time_ = node_->get_clock()->now();
     hardware_connected_ = true;
-  }
-}
-
-void TurntableSystem::esp32_status_callback(const std_msgs::msg::Bool::SharedPtr msg)
-{
-  esp32_online_ = msg->data;
-  if (msg->data) {
-    RCLCPP_INFO_ONCE(node_->get_logger(), "ESP32 is online and ready");
-  } else {
-    RCLCPP_WARN(node_->get_logger(), "ESP32 connection lost");
   }
 }
 

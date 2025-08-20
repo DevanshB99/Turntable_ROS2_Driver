@@ -1,11 +1,24 @@
+controller_manager:
+  ros__parameters:
+    update_rate: 100  # Hz
+    
+    turntable_system:
+      type: turntable_hardware_interface/TurntableSystem
+      
+      hardware_parameters:
+        publish_command: "1"
+        target_angle_topic: "/esp32/target_angle"
+        trajectory_topic: "/esp32/trajectory"
+        joint_states_topic: "/turntables/joint_states"
+        velocity_topic: "/esp32/cmd_vel"
+        esp32_status_topic: "/esp32/status"
+        command_tolerance: "0.017"  # ~1 degree in radians
+        velocity_limit: "1.57"      # ~90 deg/s in rad/s
+
+      joints:
+        - disc_joint
+
 turntable_system:
   ros__parameters:
-    hardware_class_type: "turntable_hardware_interface/TurntableSystem"
-
-    hardware_parameters:
-      publish_command: "1"
-      target_angle_topic: "/target_angle"
-      joint_states_topic: "/turntables/joint_states"
-
     joints:
-      - name: disc_joint
+      - disc_joint
