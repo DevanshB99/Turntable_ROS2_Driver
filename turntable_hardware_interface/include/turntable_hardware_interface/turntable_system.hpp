@@ -4,9 +4,6 @@
 #include <rclcpp/rclcpp.hpp>
 #include <std_msgs/msg/float32.hpp>
 #include <sensor_msgs/msg/joint_state.hpp>
-#include <trajectory_msgs/msg/joint_trajectory.hpp>
-#include <geometry_msgs/msg/twist.hpp>
-#include <std_msgs/msg/bool.hpp>
 
 #include <hardware_interface/system_interface.hpp>
 #include <hardware_interface/types/hardware_interface_type_values.hpp>
@@ -14,7 +11,6 @@
 #include <thread>
 #include <string>
 #include <vector>
-#include <atomic>
 
 namespace turntable_hardware_interface
 {
@@ -36,26 +32,18 @@ public:
 
 private:
   void joint_state_callback(const sensor_msgs::msg::JointState::SharedPtr msg);
-  void esp32_status_callback(const std_msgs::msg::Bool::SharedPtr msg);
   
-  // Node and communication
+  // Node and communication (matching Pi system exactly)
   rclcpp::Node::SharedPtr node_;
   rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr target_angle_pub_;
-  rclcpp::Publisher<trajectory_msgs::msg::JointTrajectory>::SharedPtr trajectory_pub_;
-  rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr velocity_pub_;
   rclcpp::Subscription<sensor_msgs::msg::JointState>::SharedPtr joint_state_sub_;
-  rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr esp32_status_sub_;
-  
   std::shared_ptr<rclcpp::executors::SingleThreadedExecutor> executor_;
   std::thread executor_thread_;
   
-  // Joint and control parameters
+  // Joint and control parameters (matching Pi system)
   std::string joint_name_;
   std::string target_angle_topic_;
-  std::string trajectory_topic_;
   std::string joint_states_topic_;
-  std::string velocity_topic_;
-  std::string esp32_status_topic_;
   bool publish_command_;
   
   // Hardware interface state variables
@@ -63,17 +51,10 @@ private:
   double hw_velocity_;
   double hw_command_;
   double hw_speed_scaling_factor_;
-  double previous_command_;
   
   // State tracking
   rclcpp::Time last_update_time_;
-  rclcpp::Time last_command_time_;
-  std::atomic<bool> hardware_connected_;
-  std::atomic<bool> esp32_online_;
-  
-  // Command smoothing
-  double command_tolerance_;
-  double velocity_limit_;
+  bool hardware_connected_;
 };
 
 }  // namespace turntable_hardware_interface

@@ -105,6 +105,7 @@ def generate_launch_description():
             package="controller_manager",
             executable="spawner",
             arguments=["turntable_trajectory_controller", "--controller-manager", "/controller_manager"],
+            parameters=[controllers_yaml],
             output="screen"
         ),
         Node(

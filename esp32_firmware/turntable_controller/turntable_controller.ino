@@ -1,134 +1,75 @@
-#include <micro_ros_arduino.h>
-#include <WiFi.h>
-#include <Wire.h>
+/*
+  ESP32 Turntable Controller with micro-ROS over WiFi
+  
+  Hardware:
+  - ESP32 Dev Module
+  - A4988 Stepper Driver
+  - NEMA 17 Stepper Motor
+  - AS5600 Magnetic Encoder
 
-#include <rcl/rcl.h>
-#include <rcl/error_handling.h>
-#include <rclc/rclc.h>
-#include <rclc/executor.h>
-
-#include <std_msgs/msg/float32.h>
-#include <std_msgs/msg/bool.h>
-#include <sensor_msgs/msg/joint_state.h>
-#include <trajectory_msgs/msg/joint_trajectory.h>
-#include <geometry_msgs/msg/twist.h>
+*/
 
 #include "config.h"
-#include "stepper_control.h"
 #include "encoder_handler.h"
+#include "stepper_control.h"
 #include "microros_interface.h"
 
-// Global objects
-StepperControl stepper;
 EncoderHandler encoder;
+StepperControl stepper;
 MicroROSInterface micro_ros;
+unsigned long last_publish_time = 0;
+unsigned long last_encoder_update = 0;
+unsigned long last_control_update = 0;
 
-// FreeRTOS task handles
-TaskHandle_t stepperTaskHandle;
-TaskHandle_t controlTaskHandle;
-TaskHandle_t microrosTaskHandle;
-
-// Setup function
-void setup() {
+void setup(){
   Serial.begin(115200);
-  delay(2000);
-  
-  Serial.println("ESP32 Turntable Controller Starting...");
-  
-  // Initialize hardware
-  stepper.begin();
-  encoder.begin();
-  
-  // Initialize micro-ROS
-  micro_ros.begin();
-  
-  // Create FreeRTOS tasks
-  xTaskCreatePinnedToCore(
-    stepperTask,
-    "StepperTask", 
-    4096,
-    NULL,
-    3,  // High priority for real-time control
-    &stepperTaskHandle,
-    1   // Pin to core 1 for dedicated stepper control
-  );
-  
-  xTaskCreatePinnedToCore(
-    controlTask,
-    "ControlTask",
-    4096,
-    NULL,
-    2,  // Medium priority
-    &controlTaskHandle,
-    0   // Pin to core 0 with micro-ROS
-  );
-  
-  xTaskCreatePinnedToCore(
-    microrosTask,
-    "MicroROSTask",
-    8192,
-    NULL,
-    1,  // Lower priority
-    &microrosTaskHandle,
-    0   // Pin to core 0
-  );
-  
-  Serial.println("ESP32 Turntable Controller Initialized");
-}
-
-// Main loop - minimal to let FreeRTOS handle tasks
-void loop() {
   delay(1000);
+  Serial.println("=== ESP32 Turntable Controller ===");
+  Serial.println("Optimized for speed and precision");
+  Serial.println();
+  Serial.println("Initializing hardware...");
+  //initialize encoder
+  encoder.begin();
+  delay(100);
+  //initialize stepper motor
+  stepper.begin();
+  delay(100);
+  // Set initial target to current position
+  double initial_position = encoder.getPositionDegrees();
+  stepper.setTargetPosition(initial_position);
+  //initialize micro-ROS communication
+  Serial.println("Connecting to micro-ROS...");
+  micro_ros.begin();
+  Serial.println();
+  Serial.println("=== SYSTEM READY ===");
+  Serial.printf("Initial position: %.2f°\n", initial_position);
+  Serial.println("Waiting for commands on /target_angle...");
+  Serial.println();
 }
 
-// Dedicated stepper control task (Core 1 - Real-time)
-void stepperTask(void *parameter) {
-  TickType_t xLastWakeTime = xTaskGetTickCount();
-  const TickType_t xFrequency = pdMS_TO_TICKS(1);  // 1ms = 1000Hz
-  
-  for (;;) {
-    stepper.update();
-    vTaskDelayUntil(&xLastWakeTime, xFrequency);
-  }
-}
-
-// Control logic task (Core 0)
-void controlTask(void *parameter) {
-  TickType_t xLastWakeTime = xTaskGetTickCount();
-  const TickType_t xFrequency = pdMS_TO_TICKS(1000 / CONTROL_LOOP_RATE_HZ);
-  
-  for (;;) {
-    // Read encoder
+void loop() {
+  unsigned long current_time = millis();
+  //encoder reading @ 100Hz
+  if (current_time - last_encoder_update >= ENCODER_READ_RATE_MS) {
     encoder.update();
-    
-    // Execute trajectory if active
-    stepper.executeTrajectory();
-    
-    // Update position control
-    stepper.updatePositionControl(encoder.getPositionDegrees());
-    
-    vTaskDelayUntil(&xLastWakeTime, xFrequency);
+    last_encoder_update = current_time;
   }
-}
-
-// micro-ROS communication task (Core 0)
-void microrosTask(void *parameter) {
-  TickType_t xLastWakeTime = xTaskGetTickCount();
-  const TickType_t xFrequency = pdMS_TO_TICKS(1000 / PUBLISH_RATE_HZ);
-  
-  for (;;) {
-    // Spin micro-ROS
-    micro_ros.spin();
-    
-    // Publish joint states
-    micro_ros.publishJointState(
-      encoder.getPositionDegrees(),
-      encoder.getVelocityDegPerSec()
-    );
-    
-    // Publish status
-    micro_ros.publishStatus(true);
-    
-    vTaskDelayUntil(&xLastWakeTime, xFrequency);
+  //motor control @ 100Hz
+  if (current_time - last_control_update >= (1000 / CONTROL_LOOP_RATE_HZ)) {
+    double current_position = encoder.getPositionDegrees();
+    stepper.updatePositionControl(current_position);
+    stepper.update();
+    last_control_update = current_time;
   }
+  //Publish joint states @ 100Hz
+  if (current_time - last_publish_time >= PUBLISH_RATE_MS) {
+    if (micro_ros.isConnected()) {
+      double position = encoder.getPositionDegrees();
+      double velocity = encoder.getVelocityDegPerSec();
+      micro_ros.publishJointState(position, velocity);
+    }
+    last_publish_time = current_time;
+  }
+  micro_ros.spin();
+  delay(1);
 }
