@@ -5,7 +5,6 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-# find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(hardware_interface REQUIRED)
 find_package(pluginlib REQUIRED)
@@ -15,12 +14,10 @@ find_package(sensor_msgs REQUIRED)
 find_package(trajectory_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 
-# Create the hardware interface library
 add_library(turntable_system SHARED
   src/turntable_system.cpp
 )
 
-# Specify dependencies for the library
 ament_target_dependencies(turntable_system
   hardware_interface
   pluginlib
@@ -31,7 +28,6 @@ ament_target_dependencies(turntable_system
   geometry_msgs
 )
 
-# Include directories for the library
 target_include_directories(turntable_system PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
@@ -40,7 +36,6 @@ target_include_directories(turntable_system PUBLIC
 # This is crucial for the plugin to be discovered
 pluginlib_export_plugin_description_file(hardware_interface turntable_hardware_interface_plugin.xml)
 
-# Install the library
 install(
   TARGETS turntable_system
   EXPORT export_turntable_system
@@ -49,22 +44,18 @@ install(
   RUNTIME DESTINATION bin
 )
 
-# Install header files
 install(DIRECTORY include/
   DESTINATION include/
 )
 
-# Install config files
 install(DIRECTORY config/
   DESTINATION share/${PROJECT_NAME}/config
 )
 
-# Install plugin description
 install(FILES turntable_hardware_interface_plugin.xml
   DESTINATION share/${PROJECT_NAME}
 )
 
-# Export dependencies
 ament_export_include_directories(include)
 ament_export_libraries(turntable_system)
 ament_export_dependencies(

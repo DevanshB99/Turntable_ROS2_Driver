@@ -20,8 +20,7 @@ hardware_interface::CallbackReturn TurntableSystem::on_init(const hardware_inter
   hw_command_ = 0.0;
   hw_speed_scaling_factor_ = 1.0; 
   hardware_connected_ = false;
-  
-  // Load parameters exactly like Pi system
+
   if (info_.hardware_parameters.count("publish_command"))
   {
     publish_command_ = std::stoi(info_.hardware_parameters.at("publish_command"));
@@ -66,18 +65,16 @@ hardware_interface::CallbackReturn TurntableSystem::on_activate(const rclcpp_lif
   last_update_time_ = node_->get_clock()->now();
   hardware_connected_ = false;
 
-  // Create publisher exactly like Pi system but with optimized QoS for ESP32
   if (publish_command_)
   {
     auto qos_profile = rclcpp::QoS(10)
-      .reliability(rclcpp::ReliabilityPolicy::BestEffort)  // Optimized for ESP32
+      .reliability(rclcpp::ReliabilityPolicy::BestEffort)
       .durability(rclcpp::DurabilityPolicy::Volatile);
       
     target_angle_pub_ = node_->create_publisher<std_msgs::msg::Float32>(
       target_angle_topic_, qos_profile);
   }
 
-  // Subscriber exactly like Pi system
   joint_state_sub_ = node_->create_subscription<sensor_msgs::msg::JointState>(
     joint_states_topic_, rclcpp::SensorDataQoS(),
     std::bind(&TurntableSystem::joint_state_callback, this, std::placeholders::_1));
@@ -123,11 +120,10 @@ hardware_interface::return_type TurntableSystem::read(const rclcpp::Time &time, 
 
 hardware_interface::return_type TurntableSystem::write(const rclcpp::Time &, const rclcpp::Duration &)
 {
-  // Publish command exactly like Pi system
   if (publish_command_ && target_angle_pub_)
   {
     std_msgs::msg::Float32 msg;
-    // Convert radians to degrees exactly like Pi system
+    //convert radians to degrees
     msg.data = static_cast<float>(hw_command_ * 180.0 / M_PI);
     target_angle_pub_->publish(msg);
   }
@@ -153,7 +149,6 @@ std::vector<hardware_interface::CommandInterface> TurntableSystem::export_comman
 
 void TurntableSystem::joint_state_callback(const sensor_msgs::msg::JointState::SharedPtr msg)
 {
-  // Handle joint state exactly like Pi system
   auto it = std::find(msg->name.begin(), msg->name.end(), joint_name_);
   if (it != msg->name.end())
   {

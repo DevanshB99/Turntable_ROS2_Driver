@@ -8,7 +8,6 @@ install(
   DESTINATION share/${PROJECT_NAME}
 )
 
-# Install full urdf folder including subfolders like 'inc'
 install(
   DIRECTORY urdf/
   DESTINATION share/${PROJECT_NAME}/urdf

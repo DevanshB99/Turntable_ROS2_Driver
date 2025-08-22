@@ -1,7 +1,9 @@
 <library path="turntable_system">
-  <class name="turntable_hardware_interface/TurntableSystem" type="turntable_hardware_interface::TurntableSystem" base_class_type="hardware_interface::SystemInterface">
+  <class name="turntable_hardware_interface/TurntableSystem" 
+  type="turntable_hardware_interface::TurntableSystem" 
+  base_class_type="hardware_interface::SystemInterface">
     <description>
-      ESP32-based turntable hardware interface over micro-ROS
+      ESP32-based 1-DOF Turntable hardware interface over micro-ROS over WiFi
     </description>
   </class>
 </library>

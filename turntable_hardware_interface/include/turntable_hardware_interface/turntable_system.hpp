@@ -33,26 +33,21 @@ public:
 private:
   void joint_state_callback(const sensor_msgs::msg::JointState::SharedPtr msg);
   
-  // Node and communication (matching Pi system exactly)
+  // Node and communication
   rclcpp::Node::SharedPtr node_;
   rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr target_angle_pub_;
   rclcpp::Subscription<sensor_msgs::msg::JointState>::SharedPtr joint_state_sub_;
   std::shared_ptr<rclcpp::executors::SingleThreadedExecutor> executor_;
   std::thread executor_thread_;
-  
-  // Joint and control parameters (matching Pi system)
   std::string joint_name_;
   std::string target_angle_topic_;
   std::string joint_states_topic_;
   bool publish_command_;
-  
-  // Hardware interface state variables
   double hw_position_;
   double hw_velocity_;
   double hw_command_;
   double hw_speed_scaling_factor_;
   
-  // State tracking
   rclcpp::Time last_update_time_;
   bool hardware_connected_;
 };
