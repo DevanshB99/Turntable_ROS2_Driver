@@ -33,14 +33,14 @@ public:
 private:
   void joint_state_callback(const sensor_msgs::msg::JointState::SharedPtr msg);
   
-  // Node and communication (matching Pi system exactly)
+  // Node and communication
   rclcpp::Node::SharedPtr node_;
   rclcpp::Publisher<std_msgs::msg::Float32>::SharedPtr target_angle_pub_;
   rclcpp::Subscription<sensor_msgs::msg::JointState>::SharedPtr joint_state_sub_;
   std::shared_ptr<rclcpp::executors::SingleThreadedExecutor> executor_;
   std::thread executor_thread_;
   
-  // Joint and control parameters (matching Pi system)
+  // Joint and control parameters
   std::string joint_name_;
   std::string target_angle_topic_;
   std::string joint_states_topic_;
