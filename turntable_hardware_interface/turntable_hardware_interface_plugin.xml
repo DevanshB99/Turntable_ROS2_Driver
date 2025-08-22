@@ -5,7 +5,7 @@
     type="turntable_hardware_interface::TurntableSystem"
     base_class_type="hardware_interface::SystemInterface">
     <description>
-      Hardware interface for a 1-DOF turntable system.
+      Hardware interface for a 1-DOF Turntable system.
     </description>
   </class>
 </library>

@@ -22,14 +22,14 @@ hardware_interface::CallbackReturn TurntableSystem::on_init(const hardware_inter
   hw_speed_scaling_factor_ = 1.0; 
   hardware_connected_ = false;
   
-  // Parameters from YAML
+  //parameters from YAML
   if (info_.hardware_parameters.count("publish_command"))
   {
     publish_command_ = std::stoi(info_.hardware_parameters.at("publish_command"));
   }
   else
   {
-    publish_command_ = 1; // Default value
+    publish_command_ = 1; //default value
     RCLCPP_WARN(rclcpp::get_logger("TurntableSystem"), 
                "Parameter 'publish_command' not found, using default: %d", publish_command_);
   }
@@ -40,7 +40,7 @@ hardware_interface::CallbackReturn TurntableSystem::on_init(const hardware_inter
   }
   else
   {
-    target_angle_topic_ = "/target_angle"; // Default value
+    target_angle_topic_ = "/target_angle"; //default value
     RCLCPP_WARN(rclcpp::get_logger("TurntableSystem"), 
                "Parameter 'target_angle_topic' not found, using default: %s", target_angle_topic_.c_str());
   }
@@ -51,7 +51,7 @@ hardware_interface::CallbackReturn TurntableSystem::on_init(const hardware_inter
   }
   else
   {
-    joint_states_topic_ = "/turntables/joint_states"; // Default value
+    joint_states_topic_ = "/turntables/joint_states"; //default value
     RCLCPP_WARN(rclcpp::get_logger("TurntableSystem"), 
                "Parameter 'joint_states_topic' not found, using default: %s", joint_states_topic_.c_str());
   }
@@ -64,7 +64,6 @@ hardware_interface::CallbackReturn TurntableSystem::on_activate(const rclcpp_lif
   rclcpp::NodeOptions options;
   node_ = std::make_shared<rclcpp::Node>("turntable_system_node", options);
 
-  // Initialize state tracking timestamp
   last_update_time_ = node_->get_clock()->now();
   hardware_connected_ = false;
 
@@ -102,7 +101,6 @@ hardware_interface::CallbackReturn TurntableSystem::on_deactivate(const rclcpp_l
 
 hardware_interface::return_type TurntableSystem::read(const rclcpp::Time &time, const rclcpp::Duration &)
 {
-  // Check if we've received state updates recently
   auto time_since_last_update = time - last_update_time_;
   if (time_since_last_update.seconds() > 1.0) {
     if (hardware_connected_) {
@@ -152,12 +150,10 @@ void TurntableSystem::joint_state_callback(const sensor_msgs::msg::JointState::S
   {
     auto idx = std::distance(msg->name.begin(), it);
     if (idx >= 0 && static_cast<size_t>(idx) < msg->position.size()) {
-      // No sign flip needed - using direct value
       hw_position_ = msg->position[idx];
     }
     
     if (idx >= 0 && static_cast<size_t>(idx) < msg->velocity.size()) {
-      // No sign flip needed
       hw_velocity_ = msg->velocity[idx];
     }
     
@@ -166,7 +162,7 @@ void TurntableSystem::joint_state_callback(const sensor_msgs::msg::JointState::S
   }
 }
 
-}  // namespace turntable_hardware_interface
+}
 
 #include "pluginlib/class_list_macros.hpp"
 PLUGINLIB_EXPORT_CLASS(turntable_hardware_interface::TurntableSystem, hardware_interface::SystemInterface)

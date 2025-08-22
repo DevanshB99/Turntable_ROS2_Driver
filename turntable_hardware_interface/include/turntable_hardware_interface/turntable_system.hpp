@@ -57,6 +57,6 @@ private:
   bool hardware_connected_;
 };
 
-}  // namespace turntable_hardware_interface
+}
 
 #endif  // TURNTABLE_HARDWARE_INTERFACE__TURNTABLE_SYSTEM_HPP_

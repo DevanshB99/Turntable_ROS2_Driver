@@ -3,7 +3,7 @@
 <package format="3">
   <name>turntable_hardware_interface</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
+  <description>Hardware Interface for the custom Turntable.</description>
   <maintainer email="db7529@uw.edu">Devansh A. Bajwala</maintainer>
   <license>TODO: License declaration</license>
 
