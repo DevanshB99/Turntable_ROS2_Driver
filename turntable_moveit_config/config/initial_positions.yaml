@@ -1,4 +1,2 @@
 # Default initial positions for turntable's ros2_control fake system
-
-initial_positions:
-  disc_joint: 0
+disc_joint: 0
