@@ -19,7 +19,7 @@
   <xacro:arg name="headless_mode" default="false"/>
   <xacro:arg name="initial_positions_file" default="$(find turntable_description)/config/turntable/initial_positions.yaml"/>
   <xacro:property name="initial_positions_file" value="$(arg initial_positions_file)"/>
-  <xacro:property name="initial_positions" value="${xacro.load_yaml(initial_positions_file)['initial_positions']}"/>
+  <xacro:property name="initial_positions" value="${xacro.load_yaml(initial_positions_file)}"/>
 
   <!-- ros2_control plugin -->
   <xacro:turntable_ros2_control
