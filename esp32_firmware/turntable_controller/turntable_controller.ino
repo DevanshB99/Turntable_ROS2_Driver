@@ -28,32 +28,44 @@ void setup(){
   Serial.println("Optimized for speed and precision");
   Serial.println();
   Serial.println("Initializing hardware...");
+  
   //initialize encoder
   encoder.begin();
   delay(100);
+  
   //initialize stepper motor
   stepper.begin();
   delay(100);
+  
   // Set initial target to current position
   double initial_position = encoder.getPositionDegrees();
   stepper.setTargetPosition(initial_position);
+  
+  // DOMAIN ID CONFIGURATION:
+  // Change this number to your desired domain ID before connecting
+  micro_ros.setDomainId(11);  // Set to match your agent domain ID
+  
   //initialize micro-ROS communication
   Serial.println("Connecting to micro-ROS...");
   micro_ros.begin();
+  
   Serial.println();
   Serial.println("=== SYSTEM READY ===");
   Serial.printf("Initial position: %.2f°\n", initial_position);
+  Serial.printf("ROS Domain ID: %zu\n", micro_ros.getDomainId());
   Serial.println("Waiting for commands on /target_angle...");
   Serial.println();
 }
 
 void loop() {
   unsigned long current_time = millis();
+  
   //encoder reading @ 100Hz
   if (current_time - last_encoder_update >= ENCODER_READ_RATE_MS) {
     encoder.update();
     last_encoder_update = current_time;
   }
+  
   //motor control @ 100Hz
   if (current_time - last_control_update >= (1000 / CONTROL_LOOP_RATE_HZ)) {
     double current_position = encoder.getPositionDegrees();
@@ -61,6 +73,7 @@ void loop() {
     stepper.update();
     last_control_update = current_time;
   }
+  
   //Publish joint states @ 100Hz
   if (current_time - last_publish_time >= PUBLISH_RATE_MS) {
     if (micro_ros.isConnected()) {
@@ -70,6 +83,6 @@ void loop() {
     }
     last_publish_time = current_time;
   }
+  
   micro_ros.spin();
-  delay(1);
 }

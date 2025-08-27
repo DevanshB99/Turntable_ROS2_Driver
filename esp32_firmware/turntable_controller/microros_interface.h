@@ -19,6 +19,10 @@ private:
   rclc_support_t support_;
   rcl_node_t node_;
   rclc_executor_t executor_;
+  rcl_init_options_t init_options_;
+
+  // Domain ID
+  size_t domain_id_;
 
   //publisher - joint_state
   rcl_publisher_t joint_state_pub_;
@@ -39,6 +43,7 @@ private:
   double joint_position_[1];
   double joint_velocity_[1];
   double joint_effort_[1];
+  rosidl_runtime_c__String joint_name_string_;  // Static string structure
   bool micro_ros_connected_;
   unsigned long last_status_time_;
   
@@ -63,6 +68,8 @@ public:
   void handleTargetAngle(const std_msgs__msg__Float32* msg);
   void handleTrajectory(const trajectory_msgs__msg__JointTrajectory* msg);
   void handleCommands(const std_msgs__msg__Float64MultiArray* msg);
+  void setDomainId(size_t domain_id) { domain_id_ = domain_id; }
+  size_t getDomainId() const { return domain_id_; }
 };
 
 extern MicroROSInterface micro_ros;
