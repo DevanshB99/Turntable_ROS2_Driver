@@ -9,7 +9,11 @@ MicroROSInterface::MicroROSInterface()
   , executing_trajectory_(false)
   , current_trajectory_point_(0)
   , trajectory_start_time_(0)
+<<<<<<< HEAD
   , domain_id_(11)  // Set your desired domain ID here
+=======
+  , domain_id_(0)  // Set your desired domain ID here
+>>>>>>> 766fb78 (Integrated feature - ROS DOMAIN ID - set it in microros-interface.cpp file.)
 {
   micro_ros_instance = this;
 }
@@ -131,7 +135,21 @@ bool MicroROSInterface::connectToAgent() {
     return false;
   }
   Serial.println("Joint state publisher created successfully");
+<<<<<<< HEAD
   
+=======
+
+  //turntable_status_publisher
+  Serial.println("[DEBUG] Attempting to create turntable status publisher...");
+  if (rclc_publisher_init_best_effort(&turntable_status_pub_, &node_,
+                                    ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Bool),
+                                    TURNTABLE_STATUS_TOPIC) != RCL_RET_OK) {
+    Serial.println("Failed to create turntable status publisher");
+    return false;
+  }
+  Serial.println("Turntable status publisher created successfully");
+
+>>>>>>> 766fb78 (Integrated feature - ROS DOMAIN ID - set it in microros-interface.cpp file.)
   //target_angle
   if (rclc_subscription_init_best_effort(&target_angle_sub_, &node_,
                                         ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Float32),
@@ -202,22 +220,48 @@ void MicroROSInterface::setupStaticMessages(){
   joint_state_msg_.name.data = &joint_name_string_;
   joint_state_msg_.name.size = 1;
   joint_state_msg_.name.capacity = 1;
+<<<<<<< HEAD
+=======
+  
+  // Setup frame_id
+>>>>>>> 766fb78 (Integrated feature - ROS DOMAIN ID - set it in microros-interface.cpp file.)
   strcpy(frame_id_storage_, "base_link");
   joint_state_msg_.header.frame_id.data = frame_id_storage_;
   joint_state_msg_.header.frame_id.size = strlen(frame_id_storage_);
   joint_state_msg_.header.frame_id.capacity = sizeof(frame_id_storage_);
+<<<<<<< HEAD
+=======
+  
+  // Setup position array
+>>>>>>> 766fb78 (Integrated feature - ROS DOMAIN ID - set it in microros-interface.cpp file.)
   joint_state_msg_.position.data = joint_position_;
   joint_state_msg_.position.size = 1;
   joint_state_msg_.position.capacity = 1;
   joint_position_[0] = 0.0;
+<<<<<<< HEAD
+=======
+  
+  // Setup velocity array  
+>>>>>>> 766fb78 (Integrated feature - ROS DOMAIN ID - set it in microros-interface.cpp file.)
   joint_state_msg_.velocity.data = joint_velocity_;
   joint_state_msg_.velocity.size = 1;
   joint_state_msg_.velocity.capacity = 1;
   joint_velocity_[0] = 0.0;
+<<<<<<< HEAD
+=======
+  
+  // Setup effort array
+>>>>>>> 766fb78 (Integrated feature - ROS DOMAIN ID - set it in microros-interface.cpp file.)
   joint_state_msg_.effort.data = joint_effort_;
   joint_state_msg_.effort.size = 1;
   joint_state_msg_.effort.capacity = 1;
   joint_effort_[0] = 0.0;
+<<<<<<< HEAD
+=======
+
+  //initialize turntables status messages
+  turntable_status_msg_.data = false;
+>>>>>>> 766fb78 (Integrated feature - ROS DOMAIN ID - set it in microros-interface.cpp file.)
   
   Serial.println("Static messages initialized successfully (no malloc)");
 }
@@ -245,6 +289,16 @@ void MicroROSInterface::publishJointState(double position_deg, double velocity_d
   rcl_publish(&joint_state_pub_, &joint_state_msg_, NULL);
 }
 
+<<<<<<< HEAD
+=======
+void MicroROSInterface::publishTurntableStatus(bool is_moving) {
+  Serial.println("[DEBUG] publishTurntableStatus() called");
+  if (!micro_ros_connected_) return;
+  turntable_status_msg_.data = is_moving;
+  rcl_publish(&turntable_status_pub_, &turntable_status_msg_, NULL);
+}
+
+>>>>>>> 766fb78 (Integrated feature - ROS DOMAIN ID - set it in microros-interface.cpp file.)
 void MicroROSInterface::publishStatus(bool online) {
   (void)online;
 }

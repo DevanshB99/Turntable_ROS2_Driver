@@ -24,10 +24,11 @@
 
 #define STEP_DELAY_DEFAULT_US 1000  // 1ms default step delay
 #define MIN_STEP_DELAY_US 300       // Minimum safe step delay
-#define CONTROL_LOOP_RATE_HZ 100    // Main control loop
-#define PUBLISH_RATE_MS 10          // 100Hz joint state publishing
-#define PUBLISH_RATE_HZ 100         // 100Hz joint state publishing
-#define ENCODER_READ_RATE_MS 10     // 100Hz encoder reading
+#define CONTROL_LOOP_RATE_HZ 125    // Main control loop
+#define PUBLISH_RATE_MS 8           // 125Hz joint state publishing
+#define PUBLISH_RATE_HZ 125         // 125Hz joint state publishing
+#define ENCODER_READ_RATE_MS 8     // 125Hz encoder reading
+#define STATUS_PUBLISH_RATE_MS 8   // 125Hz turtnable status publishing
 #define POSITION_TOLERANCE_DEG 0.5   
 #define MAX_VELOCITY_DEG_PER_SEC 180.0
 #define ACCELERATION_DEG_PER_SEC2 90.0
@@ -40,6 +41,7 @@
 #define MICROROS_NODE_NAME "turntable_esp32"
 #define MICROROS_NAMESPACE ""
 
+#define TURNTABLE_STATUS_TOPIC "/turntable/status"
 #define TARGET_ANGLE_TOPIC "/target_angle"
 #define JOINT_STATES_TOPIC "/turntables/joint_states"
 #define TRAJECTORY_TOPIC "/turntable_trajectory_controller/joint_trajectory"

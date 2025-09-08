@@ -20,19 +20,27 @@ private:
   rcl_node_t node_;
   rclc_executor_t executor_;
   rcl_init_options_t init_options_;
+<<<<<<< HEAD
+
+  // Domain ID
+  size_t domain_id_;
+=======
+>>>>>>> 766fb78 (Integrated feature - ROS DOMAIN ID - set it in microros-interface.cpp file.)
 
   // Domain ID
   size_t domain_id_;
 
-  //publisher - joint_state
+  //publisher - joint_state & turntbale_status
   rcl_publisher_t joint_state_pub_;
+  rcl_publisher_t turntable_status_pub_;
 
   //subscriber - /target_angle, /joint_trajecory, /commands
   rcl_subscription_t target_angle_sub_;
   rcl_subscription_t trajectory_sub_;
   rcl_subscription_t commands_sub_;
   
-  //messages - sensor_msgs: encoder, Float32: target_angle/keyboard_publisher_node, Float64: turntable_forward_position_controller, trajectory_msgs: JointTrajectory
+  //messages - std_msg: turntable_status, sensor_msgs: encoder, Float32: target_angle/keyboard_publisher_node, Float64: turntable_forward_position_controller, trajectory_msgs: JointTrajectory
+  std_msgs__msg__Bool turntable_status_msg_; 
   sensor_msgs__msg__JointState joint_state_msg_;
   std_msgs__msg__Float32 target_angle_msg_;
   trajectory_msgs__msg__JointTrajectory trajectory_msg_;
@@ -64,6 +72,7 @@ public:
   void spin();
   void publishJointState(double position_deg, double velocity_deg_per_sec);
   void publishStatus(bool online);
+  void publishTurntableStatus(bool is_moving);
   bool isConnected() const { return micro_ros_connected_; }
   void handleTargetAngle(const std_msgs__msg__Float32* msg);
   void handleTrajectory(const trajectory_msgs__msg__JointTrajectory* msg);
