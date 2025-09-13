@@ -1,8 +1,3 @@
-# Turntable ROS2 Driver
-A comprehensive ROS2 integration suite for standalone precision turntable systems, providing URDF modeling, hardware interfaces, and MoveIt motion planning capabilities. This repository enables complete autonomous operation of custom turntables with advanced planning and control features.
-
-
-
 # ROS2-Humble Turntable System with ESP32 Wireless Control
 ![ROS2](https://img.shields.io/badge/ROS2-Humble-blue) ![Platform](https://img.shields.io/badge/Platform-ESP32-orange) ![Communication](https://img.shields.io/badge/Communication-WiFi%20micro--ROS-green) ![Maintenance](https://img.shields.io/badge/Maintained-Yes-brightgreen)
 
@@ -46,21 +41,18 @@ cp -r * ~/turntable_ws/src/
 cd ~/turntable_ws
 ```
 
-## 🏗️ System Architecture
+## 🏗️ System Architecture & Data Flow
 
-![System Architecture](docs/images/esp32_system_architecture.png)
+
+![System Flow](docs/images/esp32_system_flow.png)
 
 The system follows a distributed wireless architecture approach:
 
 1. **User Interface Layer** - MoveIt planning, RViz visualization, keyboard/topic control
-2. **ROS2 Control Layer** - Joint trajectory controller, forward position controller, hardware interface
-3. **micro-ROS Bridge** - WiFi communication layer with 125Hz real-time performance
+2. **ROS2 Control Framework** - Joint trajectory controller, forward position controller, hardware interface
+3. **Hardware Interface** - WiFi communication layer with 125Hz real-time performance
 4. **ESP32 Real-time Layer** - Embedded motor control, encoder processing, safety monitoring
-5. **Physical Hardware Layer** - NEMA 17 motor, A4988 driver, AS5600 encoder, 4:1 belt drive
 
-### Data Flow
-
-![System Flow](docs/images/esp32_system_flow.png)
 
 ```
 User Command → ROS2 Controllers → Hardware Interface → micro-ROS WiFi (125Hz)
@@ -215,8 +207,6 @@ turntable_ws/src/
 ```
 
 ### ROS2 Control Framework Integration
-
-![Control Flow](docs/images/esp32_control_flow.png)
 
 The system implements a custom `hardware_interface::SystemInterface` that bridges ROS2 control commands with the ESP32 hardware via WiFi micro-ROS communication.
 
