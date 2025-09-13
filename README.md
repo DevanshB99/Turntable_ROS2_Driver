@@ -9,7 +9,7 @@ This project implements a cutting-edge robotics turntable system that bridges lo
 
 ### Key Features
 
-![Turntable System](docs/images/esp32_turntable_hero.jpg)
+![Turntable System](docs/images/esp32_turntable_hero.png)
 
 **🌟 Core Capabilities:**
 - **📡 Wireless Control**: Complete elimination of cables through WiFi micro-ROS communication
