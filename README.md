@@ -1,13 +1,12 @@
 # ROS2-Humble Turntable System with Precision Stepper Control
 ![ROS2](https://img.shields.io/badge/ROS2-Humble-blue) ![Platform](https://img.shields.io/badge/Platform-Raspberry%20Pi%204-red) ![Maintenance](https://img.shields.io/badge/Maintained-Yes-brightgreen)
 
-A comprehensive ROS2 integration suite for standalone precision Turntable Systems, providing URDF modeling, hardware interfaces, and MoveIt motion planning capabilities. This repository enables complete autonomous operation of custom turntables with advanced planning and control features.
-
 🎯 Overview
-This project implements a complete robotics turntable system that bridges low-level hardware control with high-level motion planning. The system consists of a rotating disc platform controlled by a stepper motor, with precise position feedback from an AS5600 magnetic encoder, all seamlessly integrated with ROS2's control framework and MoveIt for advanced motion planning.
-Key Features
+This comprehensive ROS2 integration suite transforms standalone precision turntable systems into fully autonomous robotic platforms through seamless hardware-software integration. The system bridges low-level stepper motor control and AS5600 magnetic encoder feedback with high-level motion planning capabilities, providing complete URDF modeling, standardized hardware interfaces, and MoveIt integration for advanced trajectory planning and execution. By combining precise rotational control of the disc platform with ROS2's robust control framework, this solution enables sophisticated autonomous operation with professional-grade planning and control features, making custom turntable systems accessible to the broader robotics ecosystem while maintaining the precision and reliability required for demanding applications.
 
-![Turntable System](docs/images/turntable_hero_image.jpg)
+## Key Features
+
+![Turntable System](docs/images/turntable_hero.png)
 
 Precision Control: Sub-degree positioning accuracy with magnetic encoder feedback
 ROS2 Integration: Full ros2_control framework implementation
