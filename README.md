@@ -1,11 +1,9 @@
 # ROS2-Humble Turntable System with ESP32 Wireless Control
 ![ROS2](https://img.shields.io/badge/ROS2-Humble-blue) ![Platform](https://img.shields.io/badge/Platform-ESP32-orange) ![Communication](https://img.shields.io/badge/Communication-WiFi%20micro--ROS-green) ![Maintenance](https://img.shields.io/badge/Maintained-Yes-brightgreen)
 
-A comprehensive ROS2 integration suite for standalone precision Turntable Systems featuring **ESP32-based wireless control with micro-ROS**. This repository enables complete autonomous operation of custom turntables with advanced planning, wireless communication, and real-time control at 125Hz.
-
 ## 🎯 Overview
 
-This project implements a cutting-edge robotics turntable system that bridges low-level embedded hardware control with high-level motion planning through wireless communication. The system consists of a rotating disc platform controlled by an ESP32 microcontroller, with precise position feedback from an AS5600 magnetic encoder, all seamlessly integrated with ROS2's control framework via micro-ROS over WiFi for advanced motion planning and visualization.
+A comprehensive ROS2 integration suite for standalone precision Turntable Systems featuring **ESP32-based wireless control with micro-ROS**. This repository enables complete autonomous operation of custom turntables with advanced planning, wireless communication, and real-time control at 125Hz & implements a cutting-edge robotics turntable system that bridges low-level embedded hardware control with high-level motion planning through wireless communication. The system consists of a rotating disc platform controlled by an ESP32 microcontroller, with precise position feedback from an AS5600 magnetic encoder, all seamlessly integrated with ROS2's control framework via micro-ROS over WiFi for advanced motion planning and visualization.
 
 ### Key Features
 
