@@ -1,0 +1,22 @@
+turntable_joy_node:
+  ros__parameters:
+    # Jog settings
+    jog_speed_deg_per_sec: 30.0
+    publish_rate: 20.0
+
+    # Xbox controller button mapping
+    cw_button: 5      # RB - Right Bumper
+    ccw_button: 4     # LB - Left Bumper
+
+    # ROS topics
+    joy_topic: "/joy"
+    joint_states_topic: "/joint_states"
+    command_topic: "/turntable_forward_position_controller/commands"
+
+    # Controller manager
+    switch_controller_service: "/controller_manager/switch_controller"
+    position_controller: "turntable_forward_position_controller"
+    trajectory_controller: "turntable_trajectory_controller"
+
+    # Joint
+    joint_name: "disc_joint"

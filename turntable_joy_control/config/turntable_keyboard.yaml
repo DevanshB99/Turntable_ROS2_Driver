@@ -1,0 +1,17 @@
+turntable_keyboard_node:
+  ros__parameters:
+    # Jog settings
+    jog_speed_deg_per_sec: 30.0
+    publish_rate: 20.0
+
+    # ROS topics
+    joint_states_topic: "/joint_states"
+    command_topic: "/turntable_forward_position_controller/commands"
+
+    # Controller manager
+    switch_controller_service: "/controller_manager/switch_controller"
+    position_controller: "turntable_forward_position_controller"
+    trajectory_controller: "turntable_trajectory_controller"
+
+    # Joint
+    joint_name: "disc_joint"
