@@ -43,7 +43,7 @@
 
 #define TURNTABLE_STATUS_TOPIC "/turntable/status"
 #define TARGET_ANGLE_TOPIC "/target_angle"
-#define JOINT_STATES_TOPIC "/turntables/joint_states"
+#define JOINT_STATES_TOPIC "/joint_states"
 #define TRAJECTORY_TOPIC "/turntable_trajectory_controller/joint_trajectory"
 #define COMMANDS_TOPIC "/turntable_forward_position_controller/commands"
 #define STATUS_TOPIC "/esp32/status"

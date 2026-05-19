@@ -49,7 +49,7 @@ hardware_interface::CallbackReturn TurntableSystem::on_init(const hardware_inter
   }
   else
   {
-    joint_states_topic_ = "/turntables/joint_states";
+    joint_states_topic_ = "/joint_states";
     RCLCPP_WARN(rclcpp::get_logger("TurntableSystem"), 
                "Parameter 'joint_states_topic' not found, using default: %s", joint_states_topic_.c_str());
   }
