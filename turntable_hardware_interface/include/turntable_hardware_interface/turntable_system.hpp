@@ -8,6 +8,7 @@
 #include <hardware_interface/system_interface.hpp>
 #include <hardware_interface/types/hardware_interface_type_values.hpp>
 
+#include <atomic>
 #include <thread>
 #include <string>
 #include <vector>
@@ -48,7 +49,11 @@ private:
   double hw_command_;
   double hw_speed_scaling_factor_;
   
+  // last_update_time_ is sourced from the controller_manager's clock (set in read()
+  // when got_state_update_ flips true), so subtractions against read()'s time arg
+  // never cross time sources. Jazzy ros2_control rejects cross-source arithmetic.
   rclcpp::Time last_update_time_;
+  std::atomic<bool> got_state_update_{false};
   bool hardware_connected_;
 };
 

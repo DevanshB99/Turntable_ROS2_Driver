@@ -62,7 +62,9 @@ hardware_interface::CallbackReturn TurntableSystem::on_activate(const rclcpp_lif
   rclcpp::NodeOptions options;
   node_ = std::make_shared<rclcpp::Node>("turntable_system_node", options);
 
-  last_update_time_ = node_->get_clock()->now();
+  // Initial source matches the controller_manager (Steady on Jazzy); overwritten in read().
+  last_update_time_ = rclcpp::Time(0, 0, RCL_STEADY_TIME);
+  got_state_update_ = false;
   hardware_connected_ = false;
 
   if (publish_command_)
@@ -104,17 +106,21 @@ hardware_interface::CallbackReturn TurntableSystem::on_deactivate(const rclcpp_l
 
 hardware_interface::return_type TurntableSystem::read(const rclcpp::Time &time, const rclcpp::Duration &)
 {
-  // Check connection status exactly like Pi system
-  auto time_since_last_update = time - last_update_time_;
-  if (time_since_last_update.seconds() > 1.0) {
-    if (hardware_connected_) {
-      RCLCPP_WARN_THROTTLE(node_->get_logger(), *node_->get_clock(), 5000, 
-                         "No joint state updates for %.2f seconds", 
-                         time_since_last_update.seconds());
-    }
-    hardware_connected_ = false;
+  if (got_state_update_.exchange(false)) {
+    last_update_time_ = time;
+    hardware_connected_ = true;
   }
-  
+
+  if (hardware_connected_) {
+    auto time_since_last_update = time - last_update_time_;
+    if (time_since_last_update.seconds() > 1.0) {
+      RCLCPP_WARN_THROTTLE(node_->get_logger(), *node_->get_clock(), 5000,
+                         "No joint state updates for %.2f seconds",
+                         time_since_last_update.seconds());
+      hardware_connected_ = false;
+    }
+  }
+
   return hardware_interface::return_type::OK;
 }
 
@@ -161,9 +167,8 @@ void TurntableSystem::joint_state_callback(const sensor_msgs::msg::JointState::S
     if (idx >= 0 && static_cast<size_t>(idx) < msg->velocity.size()) {
       hw_velocity_ = msg->velocity[idx];
     }
-    
-    last_update_time_ = node_->get_clock()->now();
-    hardware_connected_ = true;
+
+    got_state_update_ = true;
   }
 }
 
